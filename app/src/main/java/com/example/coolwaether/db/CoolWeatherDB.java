@@ -40,11 +40,13 @@ public class CoolWeatherDB {
             ContentValues values=new ContentValues();
             values.put("city_name",((City)model).name);
             values.put("city_code",((City)model).code);
+            values.put("province_id",((City) model).province_id);
             db.insert(CoolWeatherOpenHelper.Table_City,null,values);
         }else if (model instanceof County){
             ContentValues values=new ContentValues();
             values.put("county_name",((County)model).name);
             values.put("county_code",((County)model).code);
+            values.put("city_id",((County) model).city_id);
             db.insert(CoolWeatherOpenHelper.Table_County,null,values);
         }
     }
@@ -63,30 +65,32 @@ public class CoolWeatherDB {
         cursor.close();
         return list;
     }
-    public List<City> loadCity(){
+    public List<City> loadCity( int provinceId){
         List<City> list=new ArrayList<City>();
-        Cursor cursor =db.query(CoolWeatherOpenHelper.Table_City,null,null,null,null,null,null);
+        Cursor cursor =db.query(CoolWeatherOpenHelper.Table_City,null,"province_id = ?",new String[]{String.valueOf(provinceId)},null,null,null);
         if (cursor.moveToFirst()){
             do {
                 City model=new City();
                 model.id=cursor.getInt(cursor.getColumnIndex("id"));
                 model.name=cursor.getString(cursor.getColumnIndex("city_name"));
                 model.code=cursor.getString(cursor.getColumnIndex("city_code"));
+                model.province_id=provinceId;
                 list.add(model);
             }while (cursor.moveToNext());
         }
         cursor.close();
         return list;
     }
-    public List<County> loadCounty(){
+    public List<County> loadCounty(int cityId){
         List<County> list=new ArrayList<County>();
-        Cursor cursor =db.query(CoolWeatherOpenHelper.Table_County,null,null,null,null,null,null);
+        Cursor cursor =db.query(CoolWeatherOpenHelper.Table_County,null,"city_id = ?",new String[]{String.valueOf(cityId)},null,null,null);
         if (cursor.moveToFirst()){
             do {
                 County model=new County();
                 model.id=cursor.getInt(cursor.getColumnIndex("id"));
                 model.name=cursor.getString(cursor.getColumnIndex("county_name"));
                 model.code=cursor.getString(cursor.getColumnIndex("county_code"));
+                model.city_id=cityId;
                 list.add(model);
             }while (cursor.moveToNext());
         }

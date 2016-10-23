@@ -24,8 +24,8 @@ public class CoolWeatherOpenHelper extends SQLiteOpenHelper {
             +"province_id integer)";
     public  static String CREATE_COUNTY= "create table "+Table_County+" ("
             +"id integer primary key autoincrement,"
-            +"county_name text"
-            +"county_code text"
+            +"county_name text, "
+            +"county_code text, "
             +"city_id integer)";
     public CoolWeatherOpenHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version){
         super(context, name, factory, version);

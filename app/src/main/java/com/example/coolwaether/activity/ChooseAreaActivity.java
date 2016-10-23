@@ -41,6 +41,7 @@ public class ChooseAreaActivity extends AppCompatActivity {
     private Province selectProvince;
     private City selectCity;
     private int currentLevel=0;
+    private int modelId=0;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -71,10 +72,10 @@ public class ChooseAreaActivity extends AppCompatActivity {
                 modelList=coolWeatherDB.loadProvince();
                 break;
             case LEVEL_CITY:
-                modelList=coolWeatherDB.loadCity();
+                modelList=coolWeatherDB.loadCity(selectProvince.id);
                 break;
             case LEVEL_COUNTY:
-                modelList=coolWeatherDB.loadCounty();
+                modelList=coolWeatherDB.loadCounty(selectCity.id);
                 break;
             default:
                 break;
@@ -125,15 +126,18 @@ public class ChooseAreaActivity extends AppCompatActivity {
     }
     private void queryFromServer(final String code, final int levelType){
         String address="";
+
         switch (levelType){
             case LEVEL_PROVINCE:
                 address="http://www.weather.com.cn/data/city3jdata/china.html";
                 break;
             case LEVEL_CITY:
+                modelId=selectProvince.id;
                 address="http://www.weather.com.cn/data/city3jdata/provshi/"+code+".html";
                 break;
             case LEVEL_COUNTY:
-                address="http://www.weather.com.cn/data/city3jdata/station/"+code+".html";
+                modelId=selectCity.id;
+                address="http://www.weather.com.cn/data/city3jdata/station/"+selectProvince.code+code+".html";
                 break;
             default:
                 break;
@@ -142,7 +146,7 @@ public class ChooseAreaActivity extends AppCompatActivity {
         HttpUtil.sendHttpRequest(address, new HttpCallBackListener() {
             @Override
             public void success(String response) {
-                boolean isSuccess= Utility.handleResponse(coolWeatherDB,response,levelType);;
+                boolean isSuccess= Utility.handleResponse(coolWeatherDB,response,levelType,modelId);;
                 if (isSuccess){
                     runOnUiThread(new Runnable() {
                         @Override
@@ -185,6 +189,7 @@ public class ChooseAreaActivity extends AppCompatActivity {
         if (currentLevel==LEVEL_PROVINCE){
             finish();
         }else {
+            currentLevel--;
             queryModels(currentLevel);
         }
     }
